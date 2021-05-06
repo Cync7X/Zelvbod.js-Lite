@@ -1,7 +1,7 @@
 "use strict";
 
 const PacketHandlers = require("./handlers.js");
-const { Constants, Collection, Channel, DMChannel, Invite } = require("discord.js");
+const { Constants, Collection, Channel, DMChannel, Invite } = require("zelvbod.js");
 
 module.exports = client => {
 	if(client.voice) {

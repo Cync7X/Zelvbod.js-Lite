@@ -1,5 +1,5 @@
-import * as Discord from "discord.js"
-export * from "discord.js"
+import * as Discord from "zelvbod.js"
+export * from "zelvbod.js"
 
 export class Client extends Discord.Client {
 	public sweepUsers(lifetime: number): void;
@@ -48,7 +48,7 @@ type ReactionUserFetchOptions = {
 	after?: Discord.Snowflake
 }
 
-declare module "discord.js-light" {
+declare module "zelvbod.js-light" {
 	interface ClientOptions {
 		cacheChannels?:boolean
 		cacheGuilds?:boolean

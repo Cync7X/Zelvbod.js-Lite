@@ -1,18 +1,18 @@
 {
-	"name": "discord.js-light",
+	"name": "zelvbod.js-light",
 	"version": "3.5.0",
-	"description": "All the power of discord.js, zero caching. This library modifies discord.js's internal classes and functions in order to give you full control over its caching behaviour.",
+	"description": "All the power of zelvbod.js, zero caching. This library modifies zelvbod.js's internal classes and functions in order to give you full control over its caching behaviour.",
 	"main": "client.js",
 	"typings": "./client.d.ts",
 	"scripts": {
 		"test": "echo \"No test specified\" && exit 0"
 	},
 	"repository": {
-		"url": "https://github.com/timotejroiko/discord.js-light.git"
+		"url": "https://github.com/timotejroiko/zelvbod.js-light.git"
 	},
 	"keywords": [
 		"discord",
-		"discord.js",
+		"zelvbod.js",
 		"light",
 		"api",
 		"bot",
@@ -26,7 +26,7 @@
 	},
 	"license": "Apache-2.0",
 	"dependencies": {
-		"discord.js": "github:Cync7X/Zelvbod.js"
+		"zelvbod.js": "github:Cync7X/Zelvbod.js"
 	},
 	"engines": {
 		"node": ">=12.0.0"

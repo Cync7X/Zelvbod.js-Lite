@@ -1,9 +1,9 @@
 "use strict";
 
 const { resolve } = require("path");
-const { Error, RangeError } = require(resolve(require.resolve("discord.js").replace("index.js", "/errors")));
-const PartialGroupDMChannel = require(resolve(require.resolve("discord.js").replace("index.js", "/structures/PartialGroupDMChannel.js")));
-const Discord = require("discord.js");
+const { Error, RangeError } = require(resolve(require.resolve("zelvbod.js").replace("index.js", "/errors")));
+const PartialGroupDMChannel = require(resolve(require.resolve("zelvbod.js").replace("index.js", "/structures/PartialGroupDMChannel.js")));
+const Discord = require("zelvbod.js");
 
 Discord.Structures.extend("Message", M => {
 	return class Message extends M {

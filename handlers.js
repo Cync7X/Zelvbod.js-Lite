@@ -1,8 +1,8 @@
 "use strict";
 
 const { resolve } = require("path");
-const PacketHandlers = require(resolve(require.resolve("discord.js").replace("index.js", "/client/websocket/handlers")));
-const { Collection, ClientUser, Constants, Intents } = require("discord.js");
+const PacketHandlers = require(resolve(require.resolve("zelvbod.js").replace("index.js", "/client/websocket/handlers")));
+const { Collection, ClientUser, Constants, Intents } = require("zelvbod.js");
 
 PacketHandlers.READY = (client, { d: data }, shard) => {
 	if(client.user) {
