@@ -2,8 +2,8 @@ import * as Discord from "zelvbod.js"
 export * from "zelvbod.js"
 
 export class Client extends Discord.Client {
-	public sweepUsers(lifetime?: number): void;
-	public sweepChannels(lifetime?: number): void;
+	public sweepUsers(lifetime: number): void;
+	public sweepChannels(lifetime: number): void;
 }
 
 type ChannelFetchOptions = {
@@ -56,11 +56,10 @@ declare module "zelvbod.js-light" {
 		cacheRoles?:boolean
 		cacheOverwrites?:boolean
 		cacheEmojis?:boolean
-		cacheMembers?:boolean
 		disabledEvents?: Array<string>
 	}
 	interface ClientEvents {
-		rest:[{path:string,method:string,response?:Promise<Buffer>}]
+		rest:[{path:string,method:string,response:Promise<Buffer>}]
 		shardConnect:[number,Discord.Collection<Discord.Snowflake,Discord.Guild>]
 		guildEmojisUpdate:[Discord.Collection<Discord.Snowflake,Discord.GuildEmoji>]
 	}
@@ -79,6 +78,7 @@ declare module "zelvbod.js-light" {
 		fetch(options: GuildFetchOptions): Promise<Discord.Collection<Discord.Snowflake, Discord.Guild>>
 	}
 	interface ChannelManager {
+		forge(id: Discord.Snowflake): Discord.DMChannel
 		forge(id: Discord.Snowflake, type?: "dm"): Discord.DMChannel
 		forge(id: Discord.Snowflake, type: "text"): Discord.TextChannel
 		forge(id: Discord.Snowflake, type: "voice"): Discord.VoiceChannel
@@ -92,7 +92,8 @@ declare module "zelvbod.js-light" {
 		fetch(options: { id: Discord.Snowflake } & ChannelFetchOptions): Promise<Discord.Channel>
 	}
 	interface GuildChannelManager {
-		forge(id: Discord.Snowflake, type?: "text"): Discord.TextChannel
+		forge(id: Discord.Snowflake): Discord.TextChannel
+		forge(id: Discord.Snowflake, type: "text"): Discord.TextChannel
 		forge(id: Discord.Snowflake, type: "voice"): Discord.VoiceChannel
 		forge(id: Discord.Snowflake, type: "category"): Discord.CategoryChannel
 		forge(id: Discord.Snowflake, type: "news"): Discord.NewsChannel
@@ -107,7 +108,7 @@ declare module "zelvbod.js-light" {
 		fetch(options: ChannelFetchOptions): Promise<Discord.Collection<Discord.Snowflake, Discord.GuildChannel>>
 	}
 	interface GuildMemberManager {
-		forge(id: Discord.Snowflake): Discord.GuildMember
+		forge(id: Discord.Snowflake): Discord.GuildMemberManager
 		fetch(): Promise<Discord.Collection<Discord.Snowflake, Discord.GuildMember>>
 		fetch(user: Discord.Snowflake): Promise<Discord.GuildMember>
 		fetch(user: Discord.Snowflake, cache: boolean): Promise<Discord.GuildMember>

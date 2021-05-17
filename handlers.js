@@ -2,14 +2,15 @@
 
 const { resolve } = require("path");
 const PacketHandlers = require(resolve(require.resolve("zelvbod.js").replace("index.js", "/client/websocket/handlers")));
-const { Collection, ClientUser, Constants, ClientApplication, Structures } = require("zelvbod.js");
+const { Collection, ClientUser, Constants, Intents } = require("zelvbod.js");
 
 PacketHandlers.READY = (client, { d: data }, shard) => {
 	if(client.user) {
 		client.user._patch(data.user);
 	} else {
-		client.user = new ClientUser(client, data.user);
-		client.users.cache.set(client.user.id, client.user);
+		const clientUser = new ClientUser(client, data.user);
+		client.user = clientUser;
+		client.users.cache.set(clientUser.id, clientUser);
 	}
 	const guilds = new Collection();
 	for(const guild of data.guilds) {
@@ -21,32 +22,24 @@ PacketHandlers.READY = (client, { d: data }, shard) => {
 		shard.debug("Guild cache is disabled, skipping guild check.");
 		shard.expectedGuilds.clear();
 	}
-	if (client.application) {
-		client.application._patch(data.application);
-	} else {
-		client.application = new ClientApplication(client, data.application);
-	}
 	shard.checkReady();
 };
 
 PacketHandlers.CHANNEL_CREATE = (client, packet, shard) => {
 	packet.d.shardID = shard.id;
 	const { channel } = client.actions.ChannelCreate.handle(packet.d);
-	if(!channel) { return; }
 	client.emit(Constants.Events.CHANNEL_CREATE, channel);
 };
 
 PacketHandlers.CHANNEL_DELETE = (client, packet, shard) => {
 	packet.d.shardID = shard.id;
 	const { channel } = client.actions.ChannelDelete.handle(packet.d);
-	if(!channel) { return; }
 	client.emit(Constants.Events.CHANNEL_DELETE, channel);
 };
 
 PacketHandlers.CHANNEL_UPDATE = (client, packet, shard) => {
 	packet.d.shardID = shard.id;
 	const { old, updated } = client.actions.ChannelUpdate.handle(packet.d);
-	if(!updated) { return; }
 	client.emit(Constants.Events.CHANNEL_UPDATE, old, updated);
 };
 
@@ -71,7 +64,7 @@ PacketHandlers.GUILD_BAN_ADD = (client, { d: data }, shard) => {
 		id: data.guild_id,
 		shardID: shard.id
 	}, false);
-	const user = client.users.add(data.user, client.options.cacheMembers || client.users.cache.has(data.user.id));
+	const user = client.users.add(data.user, client.options.fetchAllMembers || client.users.cache.has(data.user.id));
 	client.emit(Constants.Events.GUILD_BAN_ADD, guild, user);
 };
 
@@ -80,7 +73,7 @@ PacketHandlers.GUILD_BAN_REMOVE = (client, { d: data }, shard) => {
 		id: data.guild_id,
 		shardID: shard.id
 	}, false);
-	const user = client.users.add(data.user, client.options.cacheMembers || client.users.cache.has(data.user.id));
+	const user = client.users.add(data.user, client.options.fetchAllMembers || client.users.cache.has(data.user.id));
 	client.emit(Constants.Events.GUILD_BAN_REMOVE, guild, user);
 };
 
@@ -90,11 +83,20 @@ PacketHandlers.GUILD_CREATE = (client, { d: data }, shard) => {
 	if(guild) {
 		if(!guild.available && !data.unavailable) {
 			guild._patch(data);
+			if(client.ws.status === Constants.Status.READY && client.options.fetchAllMembers && (!client.options.ws.intents || (client.options.ws.intents & Intents.FLAGS.GUILD_MEMBERS))) {
+				guild.members.fetch().catch(err => client.emit(Constants.Events.DEBUG, `Failed to fetch all members: ${err}\n${err.stack}`));
+			}
 		}
 	} else {
 		guild = client.guilds.add(data, client.options.cacheGuilds);
 		if(client.ws.status === Constants.Status.READY || !client.options.cacheGuilds) {
-			client.emit(Constants.Events.GUILD_CREATE, guild);
+			if(client.options.fetchAllMembers && (!client.options.ws.intents || (client.options.ws.intents & Intents.FLAGS.GUILD_MEMBERS))) {
+				guild.members.fetch().then(() => {
+					client.emit(Constants.Events.GUILD_CREATE, guild);
+				}).catch(err => client.emit(Constants.Events.DEBUG, `Failed to fetch all members: ${err}\n${err.stack}`));
+			} else {
+				client.emit(Constants.Events.GUILD_CREATE, guild);
+			}
 		}
 	}
 };
@@ -134,7 +136,7 @@ PacketHandlers.GUILD_MEMBER_ADD = (client, { d: data }, shard) => {
 		id: data.guild_id,
 		shardID: shard.id
 	}, false);
-	const member = guild.members.add(data, client.options.cacheMembers || client.users.cache.has(data.user.id));
+	const member = guild.members.add(data, client.options.fetchAllMembers || client.users.cache.has(data.user.id));
 	if(guild.memberCount) { guild.memberCount++; }
 	client.emit(Constants.Events.GUILD_MEMBER_ADD, member);
 };
@@ -249,65 +251,6 @@ PacketHandlers.VOICE_STATE_UPDATE = (client, packet, shard) => {
 PacketHandlers.WEBHOOKS_UPDATE = (client, packet, shard) => {
 	packet.d.shardID = shard.id;
 	client.actions.WebhooksUpdate.handle(packet.d);
-};
-
-PacketHandlers.APPLICATION_COMMAND_CREATE = (client, { d: data }, shard) => {
-	let command;
-	if(data.guild_id) {
-		const guild = client.guilds.cache.get(data.guild_id) || client.guilds.add({
-			id: data.guild_id,
-			shardID: shard.id
-		}, false);
-		command = guild.commands.add(data);
-	} else {
-		command = client.application.commands.add(data);
-	}
-	client.emit(Constants.Events.APPLICATION_COMMAND_CREATE, command);
-};
-
-PacketHandlers.APPLICATION_COMMAND_DELETE = (client, { d: data }, shard) => {
-	let command;
-	if(data.guild_id) {
-		const guild = client.guilds.cache.get(data.guild_id) || client.guilds.add({
-			id: data.guild_id,
-			shardID: shard.id
-		}, false);
-		command = guild.commands.add(data);
-		guild.commands.cache.delete(data.id);
-	} else {
-		command = client.application.commands.add(data);
-		client.application.commands.cache.delete(data.id);
-	}
-	client.emit(Constants.Events.APPLICATION_COMMAND_DELETE, command);
-};
-
-PacketHandlers.APPLICATION_COMMAND_UPDATE = (client, { d: data }, shard) => {
-	let oldCommand;
-	let newCommand;
-	if(data.guild_id) {
-		const guild = client.guilds.cache.get(data.guild_id) || client.guilds.add({
-			id: data.guild_id,
-			shardID: shard.id
-		}, false);
-		oldCommand = guild.commands.cache.get(data.id)?._clone() ?? null;
-		newCommand = guild.commands.add(data);
-	} else {
-		oldCommand = client.application.commands.cache.get(data.id)?._clone() ?? null;
-		newCommand = client.application.commands.add(data);
-	}
-
-	client.emit(Constants.Events.APPLICATION_COMMAND_UPDATE, oldCommand, newCommand);
-};
-
-PacketHandlers.INTERACTION_CREATE = (client, { d: data }, shard) => {
-	data.shardID = shard.id;
-	if(data.type === Constants.InteractionTypes.APPLICATION_COMMAND) {
-		const CommandInteraction = Structures.get("CommandInteraction");
-		const interaction = new CommandInteraction(client, data);
-		client.emit(Constants.Events.INTERACTION_CREATE, interaction);
-		return;
-	}
-	client.emit(Constants.Events.DEBUG, `[INTERACTION] Received interaction with unknown type: ${data.type}`);
 };
 
 module.exports = PacketHandlers;
