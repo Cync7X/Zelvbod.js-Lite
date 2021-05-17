@@ -1,12 +1,12 @@
 "use strict";
 
 const { resolve } = require("path");
-const Permissions = require(resolve(require.resolve("discord.js").replace("index.js", "/util/Permissions.js")));
-const Constants = require(resolve(require.resolve("discord.js").replace("index.js", "/util/Constants.js")));
-const Intents = require(resolve(require.resolve("discord.js").replace("index.js", "/util/Intents.js")));
-const APIMessage = require(resolve(require.resolve("discord.js").replace("index.js", "/structures/APIMessage.js")));
+const Permissions = require(resolve(require.resolve("zelvbod.js").replace("index.js", "/util/Permissions.js")));
+const Constants = require(resolve(require.resolve("zelvbod.js").replace("index.js", "/util/Constants.js")));
+const Intents = require(resolve(require.resolve("zelvbod.js").replace("index.js", "/util/Intents.js")));
+const APIMessage = require(resolve(require.resolve("zelvbod.js").replace("index.js", "/structures/APIMessage.js")));
 
-const RHPath = resolve(require.resolve("discord.js").replace("index.js", "/rest/APIRequest.js"));
+const RHPath = resolve(require.resolve("zelvbod.js").replace("index.js", "/rest/APIRequest.js"));
 const RH = require(RHPath);
 require.cache[RHPath].exports = class APIRequest extends RH {
 	async make() {
@@ -22,7 +22,7 @@ require.cache[RHPath].exports = class APIRequest extends RH {
 	}
 };
 
-const SHPath = resolve(require.resolve("discord.js").replace("index.js", "/client/websocket/WebSocketShard.js"));
+const SHPath = resolve(require.resolve("zelvbod.js").replace("index.js", "/client/websocket/WebSocketShard.js"));
 const SH = require(SHPath);
 require.cache[SHPath].exports = class WebSocketShard extends SH {
 	async emitReady() {
@@ -75,7 +75,7 @@ require.cache[SHPath].exports = class WebSocketShard extends SH {
 	}
 };
 
-const VCPath = resolve(require.resolve("discord.js").replace("index.js", "/client/voice/VoiceConnection.js"));
+const VCPath = resolve(require.resolve("zelvbod.js").replace("index.js", "/client/voice/VoiceConnection.js"));
 const VC = require(VCPath);
 require.cache[VCPath].exports = class VoiceConnection extends VC {
 	constructor(voiceManager, channel) {
@@ -94,7 +94,7 @@ require.cache[VCPath].exports = class VoiceConnection extends VC {
 	}
 };
 
-const ALPath = resolve(require.resolve("discord.js").replace("index.js", "/structures/GuildAuditLogs.js"));
+const ALPath = resolve(require.resolve("zelvbod.js").replace("index.js", "/structures/GuildAuditLogs.js"));
 const AL = require(ALPath);
 AL.Entry = class GuildAuditLogsEntry extends AL.Entry {
 	constructor(logs, guild, data) {
@@ -129,7 +129,7 @@ require.cache[ALPath].exports = class GuildAuditLogs extends AL {
 	}
 };
 
-const TXPath = resolve(require.resolve("discord.js").replace("index.js", "/structures/interfaces/TextBasedChannel.js"));
+const TXPath = resolve(require.resolve("zelvbod.js").replace("index.js", "/structures/interfaces/TextBasedChannel.js"));
 const TX = require(TXPath);
 require.cache[TXPath].exports = class TextBasedChannel extends TX {
 	async send(content, options) {
@@ -156,7 +156,7 @@ require.cache[TXPath].exports = class TextBasedChannel extends TX {
 	}
 };
 
-const GCPath = resolve(require.resolve("discord.js").replace("index.js", "/structures/GuildChannel.js"));
+const GCPath = resolve(require.resolve("zelvbod.js").replace("index.js", "/structures/GuildChannel.js"));
 const GC = require(GCPath);
 require.cache[GCPath].exports = class GuildChannel extends GC {
 	constructor(guild, data) {
@@ -184,7 +184,7 @@ require.cache[GCPath].exports = class GuildChannel extends GC {
 	}
 };
 
-const Action = require(resolve(require.resolve("discord.js").replace("index.js", "/client/actions/Action.js")));
+const Action = require(resolve(require.resolve("zelvbod.js").replace("index.js", "/client/actions/Action.js")));
 Action.prototype.getPayload = function(data, manager, id, partialType, cache) {
 	return manager.cache.get(id) || manager.add(data, cache);
 };

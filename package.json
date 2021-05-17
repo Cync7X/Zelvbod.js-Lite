@@ -1,15 +1,9 @@
 {
 	"name": "zelvbod.js-light",
-	"version": "3.5.0",
+	"version": "3.7.7",
 	"description": "All the power of zelvbod.js, zero caching. This library modifies zelvbod.js's internal classes and functions in order to give you full control over its caching behaviour.",
 	"main": "client.js",
 	"typings": "./client.d.ts",
-	"scripts": {
-		"test": "echo \"No test specified\" && exit 0"
-	},
-	"repository": {
-		"url": "https://github.com/timotejroiko/zelvbod.js-light.git"
-	},
 	"keywords": [
 		"discord",
 		"zelvbod.js",
@@ -19,11 +13,6 @@
 		"client",
 		"djs"
 	],
-	"author": "Timotej Valentin Rojko",
-	"funding": {
-		"type": "patreon",
-		"url": "https://patreon.com/timotejroiko"
-	},
 	"license": "Apache-2.0",
 	"dependencies": {
 		"zelvbod.js": "github:Cync7X/Zelvbod.js"
